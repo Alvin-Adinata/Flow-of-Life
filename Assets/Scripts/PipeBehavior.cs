@@ -8,23 +8,20 @@ public class PipeBehavior : MonoBehaviour
     public PipeType type;
 
     // Arah koneksi [Atas, Kanan, Bawah, Kiri]
-    // Kita akan hitung ini berdasarkan tipe dan rotasi
     private bool[] connections = new bool[4];
 
-    // Variabel rotasi dari script Anda
+    // Variabel rotasi
     [SerializeField] private float rotationAngle = 90f;
     [SerializeField] private float rotationSpeed = 300f;
     private Quaternion targetRotation;
     private bool isRotating = false;
 
-    // Pelacak rotasi logis
-    // 0 = 0°, 1 = 90°, 2 = 180°, 3 = 270°
+    // Pelacak rotasi logis (0 = 0°, 1 = 90°, 2 = 180°, 3 = 270°)
     private int rotationSteps = 0;
 
     void Start()
     {
-        // Ganti rotasi awal yang statis dengan rotasi acak
-        // Ini membuat puzzle lebih baik
+        // Rotasi acak awal
         int randomRotations = Random.Range(0, 4);
         transform.Rotate(0f, rotationAngle * randomRotations, 0f);
         targetRotation = transform.rotation;
@@ -34,10 +31,41 @@ public class PipeBehavior : MonoBehaviour
         UpdateConnections();
     }
 
+    void Update()
+    {
+        // --- LOGIKA PENGHAPUSAN PIPA DENGAN TOMBOL 'E' ---
+        
+        // Cek apakah tombol 'E' ditekan
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            // Lakukan Raycast dari posisi mouse di layar
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            // Gunakan Physics.Raycast untuk melihat apakah kursor mouse mengenai objek
+            // Collider pipa (perlu Collider terpasang!)
+            if (Physics.Raycast(ray, out hit, 100f))
+            {
+                // Periksa apakah objek yang terkena raycast adalah game object ini
+                if (hit.collider.gameObject == gameObject)
+                {
+                    // Hapus objek pipa
+                    Destroy(gameObject);
+                    
+                    // Anda dapat menambahkan kode di sini untuk:
+                    // - Memainkan suara atau efek visual penghapusan
+                    // - Memberi tahu Puzzle/Game Manager bahwa sebuah pipa telah hilang
+                }
+            }
+        }
+        // --- AKHIR LOGIKA PENGHAPUSAN ---
+    }
+    
     private void OnMouseDown()
     {
-        if (isRotating) return; 
+        if (isRotating) return;
 
+        // Menentukan rotasi target 90 derajat selanjutnya
         targetRotation *= Quaternion.Euler(0f, rotationAngle, 0f);
         
         // Perbarui pelacak rotasi logis
