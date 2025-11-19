@@ -7,6 +7,9 @@ public class PipeBehavior : MonoBehaviour
     public enum PipeType { Straight, Curve }
     public PipeType type;
 
+    [Header("Lock Settings")]
+    public bool isLocked = false; // Jika true, pipa tidak bisa diputar
+
     // Arah koneksi [Atas, Kanan, Bawah, Kiri]
     private bool[] connections = new bool[4];
 
@@ -21,6 +24,14 @@ public class PipeBehavior : MonoBehaviour
 
     void Start()
     {
+        // Jangan random rotasi jika ini StartPipe atau EndPipe
+        if (CompareTag("StartPipe") || CompareTag("EndPipe"))
+        {
+            targetRotation = transform.rotation;
+            UpdateConnections();
+            return;
+        }
+
         // Rotasi acak awal
         int randomRotations = Random.Range(0, 4);
         transform.Rotate(0f, rotationAngle * randomRotations, 0f);
@@ -63,6 +74,12 @@ public class PipeBehavior : MonoBehaviour
     
     private void OnMouseDown()
     {
+        if (isLocked)
+        {
+            Debug.Log("Pipa terkunci, tidak bisa diputar.");
+            return;
+        }
+
         if (isRotating) return;
 
         // Menentukan rotasi target 90 derajat selanjutnya

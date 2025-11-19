@@ -1206,6 +1206,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 788757066}
     m_Modifications:
+    - target: {fileID: 3880098183747906733, guid: fec13641f768fc041939985f433d00c5, type: 3}
+      propertyPath: isLocked
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5977015573000745083, guid: fec13641f768fc041939985f433d00c5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 8.98
@@ -1249,6 +1253,10 @@ PrefabInstance:
     - target: {fileID: 8558661928522114454, guid: fec13641f768fc041939985f433d00c5, type: 3}
       propertyPath: m_Name
       value: goal
+      objectReference: {fileID: 0}
+    - target: {fileID: 8558661928522114454, guid: fec13641f768fc041939985f433d00c5, type: 3}
+      propertyPath: m_TagString
+      value: EndPipe
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3659,6 +3667,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 788757066}
     m_Modifications:
     - target: {fileID: 3880098183747906733, guid: fec13641f768fc041939985f433d00c5, type: 3}
+      propertyPath: isLocked
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3880098183747906733, guid: fec13641f768fc041939985f433d00c5, type: 3}
       propertyPath: rigidBody
       value: 
       objectReference: {fileID: 0}
@@ -3705,6 +3717,10 @@ PrefabInstance:
     - target: {fileID: 8558661928522114454, guid: fec13641f768fc041939985f433d00c5, type: 3}
       propertyPath: m_Name
       value: start
+      objectReference: {fileID: 0}
+    - target: {fileID: 8558661928522114454, guid: fec13641f768fc041939985f433d00c5, type: 3}
+      propertyPath: m_TagString
+      value: StartPipe
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6089,6 +6105,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1868386305}
+  - component: {fileID: 1868386306}
   m_Layer: 0
   m_Name: GridManager
   m_TagString: Untagged
@@ -6112,6 +6129,21 @@ Transform:
   - {fileID: 1938783623}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1868386306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1868386303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6822bea27cee0540b98bce6f2ad3d74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  randomizePipesOnStart: 1
+  width: 10
+  height: 10
 --- !u!1001 &1870421331
 PrefabInstance:
   m_ObjectHideFlags: 0
