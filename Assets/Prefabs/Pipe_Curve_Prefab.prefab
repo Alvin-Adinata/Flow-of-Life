@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 9077138521573549576}
   - component: {fileID: 6582283118898049053}
   - component: {fileID: -783219345010175357}
+  - component: {fileID: 7352440272497507286}
   m_Layer: 0
   m_Name: Pipe_Curve_Prefab
   m_TagString: Untagged
@@ -71,6 +72,21 @@ MonoBehaviour:
   type: 1
   rotationAngle: 90
   rotationSpeed: 300
+--- !u!114 &7352440272497507286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4905421225179375817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed420840cee53f547986735484357d79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isBroken: 0
+  matNormal: {fileID: 2100000, guid: 0629bd93713375949b60447b425d79c7, type: 2}
+  matRusak: {fileID: 2100000, guid: 968ae8b7eb2bf6e43895bdf59f343881, type: 2}
 --- !u!1 &6047819034028261413
 GameObject:
   m_ObjectHideFlags: 0

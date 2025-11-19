@@ -4,8 +4,8 @@ using UnityEngine;
 public class EarthquakeManager : MonoBehaviour
 {
     [Header("Waktu Gempa")]
-    public float waktuMin = 5f;
-    public float waktuMax = 10f;
+    public float waktuMin = 15f;
+    public float waktuMax = 30f;
 
     [Header("Efek Kamera")]
     public Transform kameraUtama; // Slot untuk Main Camera
