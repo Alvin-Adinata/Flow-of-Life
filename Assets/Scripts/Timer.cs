@@ -1,25 +1,47 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
 public class Timer : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI timerText;
-    [SerializeField] float remainingTime;
+
+    [Header("Timer Settings")]
+    [SerializeField] float startTime;   // waktu awal timer
+
+    float remainingTime; // waktu berjalan (runtime)
+
+    void Start()
+    {
+        // reset timer setiap kali scene dimulai / restart
+        remainingTime = startTime;
+        timerText.color = Color.white;
+    }
 
     void Update()
     {
+        // Kurangi waktu
+        remainingTime -= Time.deltaTime;
 
-        if (remainingTime <= 0)
+        // Jika waktu <= 10 detik, ubah warna menjadi merah
+        if (remainingTime <= 10f)
+        {
+            timerText.color = Color.red;
+        }
+
+        // Jika habis → Game Over
+        if (remainingTime <= 0f)
         {
             timerText.text = "0:00";
-            timerText.color = Color.red;
+
+            // panggil GameOver dari GameManager
+            Object.FindFirstObjectByType<GameManager>()?.GameOver();
             return;
         }
-        remainingTime -= Time.deltaTime;
-        int minutes = Mathf.FloorToInt(remainingTime / 60F);
-        int seconds = Mathf.FloorToInt(remainingTime - minutes * 60);
+
+        // Update display
+        int minutes = Mathf.FloorToInt(remainingTime / 60f);
+        int seconds = Mathf.FloorToInt(remainingTime % 60f);
+
         timerText.text = string.Format("{0:0}:{1:00}", minutes, seconds);
     }
 }
