@@ -6,15 +6,28 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject gameOverPanel;
     [SerializeField] GameObject tutorialPanel;
 
+    public static bool isRestarted = false;
+
     void Start()
     {
 
-        // pastikan panel disembunyikan di awal
-        gameOverPanel.SetActive(false);
-        tutorialPanel.SetActive(false);
+        if (!isRestarted)
+        {
+            gameOverPanel.SetActive(false);
+            tutorialPanel.SetActive(false);
 
-        Time.timeScale = 0f; // jeda permainan di awal
-        ShowTutorial();
+            Time.timeScale = 0f;
+            ShowTutorial();
+        }
+        else
+        {
+            // jika baru restart, langsung main tanpa tutorial
+            tutorialPanel.SetActive(false);
+            gameOverPanel.SetActive(false);
+            Time.timeScale = 1f;
+
+            isRestarted = false; // reset lagi setelah dipakai
+        }
     }
 
     public void ShowTutorial()
@@ -35,7 +48,8 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
-        Time.timeScale = 1f;   // kembalikan normal
+        Time.timeScale = 1f;
+        isRestarted = true;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
