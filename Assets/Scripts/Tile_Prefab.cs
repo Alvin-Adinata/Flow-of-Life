@@ -4,7 +4,8 @@ using UnityEngine.EventSystems;
 public class Tile_Prefab : MonoBehaviour {
 
     [SerializeField] private Color hoverColor;
-    private GameObject Pipe;
+    [Header("Optional")]
+    [SerializeField] public GameObject Pipe;
 
     private Renderer rend;
     private Color startColor;
@@ -18,8 +19,13 @@ public class Tile_Prefab : MonoBehaviour {
         buildManager = BuildManager.instance;
     }
 
+    public Vector3 GetBuildPosition() {
+        Vector3 positionOffset = new Vector3(0f, 0.2f, 0f);
+        return transform.position + positionOffset;
+    }
+
     void OnMouseDown() {
-        if (buildManager.GetPipeToBuild() == null) {
+        if (!buildManager.CanBuild) {
             Debug.Log("No pipe selected to build!");
             return;
         }
@@ -29,12 +35,13 @@ public class Tile_Prefab : MonoBehaviour {
             return;
         }
 
-        GameObject PipeToBuild = BuildManager.instance.GetPipeToBuild();
-        Pipe = (GameObject)Instantiate(PipeToBuild, transform.position, transform.rotation);
+        buildManager.BuildPipeOn(this);
+
+
     }
 
     void OnMouseEnter() {
-        if (buildManager.GetPipeToBuild() == null) {
+        if (!buildManager.CanBuild) {
             Debug.Log("No pipe selected to build!");
             return;
         }

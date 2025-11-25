@@ -14,7 +14,6 @@ public class Timer : MonoBehaviour
     {
         // reset timer setiap kali scene dimulai / restart
         remainingTime = startTime;
-        timerText.color = Color.white;
     }
 
     void Update()
@@ -31,7 +30,7 @@ public class Timer : MonoBehaviour
         // Jika habis → Game Over
         if (remainingTime <= 0f)
         {
-            timerText.text = "0:00";
+            timerText.text = "0:00.00";
 
             // panggil GameOver dari GameManager
             Object.FindFirstObjectByType<GameManager>()?.GameOver();
@@ -41,7 +40,9 @@ public class Timer : MonoBehaviour
         // Update display
         int minutes = Mathf.FloorToInt(remainingTime / 60f);
         int seconds = Mathf.FloorToInt(remainingTime % 60f);
+        int milliseconds = Mathf.FloorToInt((remainingTime * 1000f) % 1000f / 10f);  // dua digit ms
 
-        timerText.text = string.Format("{0:0}:{1:00}", minutes, seconds);
+        // Format: M:SS.ms (dua digit ms)
+        timerText.text = string.Format("{0:0}:{1:00}.{2:00}", minutes, seconds, milliseconds);
     }
 }

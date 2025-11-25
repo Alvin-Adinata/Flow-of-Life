@@ -16,16 +16,27 @@ public class BuildManager : MonoBehaviour
         instance = this;
     }
 
+    public bool CanBuild { get { return PipeToBuild != null; } }
 
-
-    private GameObject PipeToBuild;
-
-    public GameObject GetPipeToBuild()
+    public void BuildPipeOn(Tile_Prefab tile)
     {
-        return PipeToBuild;
+        if (PlayerStat.Money < PipeToBuild.cost)
+        {
+            Debug.Log("Not enough money to build that pipe!");
+            return;
+        }
+
+        PlayerStat.Money -= PipeToBuild.cost;
+
+        GameObject pipe = (GameObject)Instantiate(PipeToBuild.prefab, tile.GetBuildPosition(), Quaternion.identity);
+        tile.Pipe = pipe;
+
+        Debug.Log("Pipe built! Money left: " + PlayerStat.Money);
     }
 
-    public void setPipeToBuild(GameObject pipe)
+    private PipeBlueprint PipeToBuild;
+
+    public void SelectPipeToBuild(PipeBlueprint pipe)
     {
         PipeToBuild = pipe;
     }
