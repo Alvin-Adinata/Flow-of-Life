@@ -24,15 +24,24 @@ public class PipeBehavior : MonoBehaviour
 
     void Start()
     {
-        // Jangan random rotasi jika ini StartPipe atau EndPipe
+        // 1. KHUSUS START & END PIPE: BACA ROTASI DARI INSPECTOR
         if (CompareTag("StartPipe") || CompareTag("EndPipe"))
         {
+            // Ambil sudut rotasi Y saat ini (misal: 90 derajat)
+            float currentY = transform.eulerAngles.y;
+
+            // Rumus: Bagi 90 untuk mendapatkan step (0, 1, 2, atau 3)
+            // Mathf.RoundToInt agar membulatkan angka desimal (misal 89.99 jadi 90)
+            rotationSteps = Mathf.RoundToInt(currentY / 90f) % 4;
+
             targetRotation = transform.rotation;
+            
+            // Update koneksi agar sesuai dengan rotasi visual yang baru dihitung
             UpdateConnections();
             return;
         }
 
-        // Rotasi acak awal
+        // 2. UNTUK PIPA LAINNYA (PUZZLE): TETAP RANDOM
         int randomRotations = Random.Range(0, 4);
         transform.Rotate(0f, rotationAngle * randomRotations, 0f);
         targetRotation = transform.rotation;
@@ -41,7 +50,7 @@ public class PipeBehavior : MonoBehaviour
         // Hitung koneksi awal
         UpdateConnections();
     }
-
+    
     void Update()
     {
         // --- LOGIKA PENGHAPUSAN PIPA DENGAN TOMBOL 'E' ---

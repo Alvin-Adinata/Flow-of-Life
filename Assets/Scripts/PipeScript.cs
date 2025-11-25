@@ -3,47 +3,69 @@ using UnityEngine;
 public class PipeScript : MonoBehaviour
 {
     public bool isBroken = false;
+    public bool isFilled = false; // Status apakah ada air
 
-    [Header("Warna Pipa")]
-    public Material matNormal; // Slot warna biru
-    public Material matRusak;  // Slot warna hitam
+    [Header("Material Pipa")]
+    public Material matNormal; // Pipa putih/kering
+    public Material matWater;    // Pipa Warna Biru
+    public Material matBroken;  // Pipa Hitam/Pecah
 
     private MeshRenderer meshRenderer;
 
-    void Start()
+    void Awake() // Ganti Start jadi Awake agar lebih cepat dimuat
     {
-        // PENTING: Pakai 'InChildren' agar bisa menemukan Mesh di dalam anak objek
         meshRenderer = GetComponentInChildren<MeshRenderer>();
-
-        // Cek keamanan supaya tidak error merah
-        if (meshRenderer == null)
-        {
-            Debug.LogError("Gagal menemukan MeshRenderer di objek " + gameObject.name);
-        }
-        else
-        {
-            RepairPipe(); // Set warna awal
-        }
+        UpdateMaterial(); // Set warna awal
     }
 
     // Fungsi dipanggil saat Gempa
     public void BreakPipe()
     {
-        if (!isBroken && meshRenderer != null)
+        if (!isBroken)
         {
             isBroken = true;
-            meshRenderer.material = matRusak; // Ubah jadi Hitam
-            Debug.Log("Pipa Pecah!");
+            UpdateMaterial();
         }
     }
 
-    // Fungsi untuk Memperbaiki
+    // Fungsi untuk Memperbaiki (Dipanggil saat player mengganti pipa)
     public void RepairPipe()
     {
-        if (meshRenderer != null)
+        isBroken = false;
+        isFilled = false; // Reset jadi kosong dulu
+        UpdateMaterial();
+    }
+
+    // Fungsi BARU: Mengatur apakah pipa ini kena air
+    public void SetWater(bool state)
+    {
+        // Jika pipa rusak, air tidak bisa mengalir (tetap dianggap tidak terisi visualnya)
+        if (isBroken) return; 
+
+        // Hanya update jika status berubah biar hemat performa
+        if (isFilled != state)
         {
-            isBroken = false;
-            meshRenderer.material = matNormal; // Ubah jadi Biru
+            isFilled = state;
+            UpdateMaterial();
+        }
+    }
+
+    // Satu fungsi pusat untuk mengatur warna
+    private void UpdateMaterial()
+    {
+        if (meshRenderer == null) return;
+
+        if (isBroken)
+        {
+            meshRenderer.material = matBroken; // Hitam
+        }
+        else if (isFilled)
+        {
+            meshRenderer.material = matWater;   // Biru (Mengalir)
+        }
+        else
+        {
+            meshRenderer.material = matNormal; // Putih (Kering)
         }
     }
 }
