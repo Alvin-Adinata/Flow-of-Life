@@ -1,18 +1,25 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public class GameLevel0Manager : MonoBehaviour
 {
     [SerializeField] GameObject gameOverPanel;
     [SerializeField] GameObject tutorialPanel;
-    
-    // 1. TAMBAHKAN INI: Variabel untuk Panel Menang
-    [SerializeField] GameObject winPanel; 
+
+    // Panel Menang
+    [SerializeField] GameObject winPanel;
 
     public static bool isRestarted = false;
-    
+
     // Status agar game tidak mengecek win berkali-kali
-    public bool isGameActive = true; 
+    public bool isGameActive = true;
+
+    public static GameLevel0Manager instance;
+
+    void Awake()
+    {
+        instance = this;
+    }
 
     void Start()
     {
@@ -20,9 +27,9 @@ public class GameManager : MonoBehaviour
         {
             gameOverPanel.SetActive(false);
             tutorialPanel.SetActive(false);
-            
+
             // Matikan panel win di awal
-            if(winPanel != null) winPanel.SetActive(false); 
+            if (winPanel != null) winPanel.SetActive(false);
 
             Time.timeScale = 0f;
             ShowTutorial();
@@ -31,7 +38,8 @@ public class GameManager : MonoBehaviour
         {
             tutorialPanel.SetActive(false);
             gameOverPanel.SetActive(false);
-            if(winPanel != null) winPanel.SetActive(false);
+
+            if (winPanel != null) winPanel.SetActive(false);
 
             Time.timeScale = 1f;
             isRestarted = false;
@@ -54,20 +62,17 @@ public class GameManager : MonoBehaviour
         gameOverPanel.SetActive(true);
     }
 
-    // 2. TAMBAHKAN FUNGSI INI: Level Completed / Menang
+    // Level Completed / Menang
     public void LevelCompleted()
     {
-        // Cek dulu apakah game masih aktif (supaya tidak panggil 2x)
         if (!isGameActive) return;
 
         Debug.Log("YOU WIN!");
-        isGameActive = false; // Stop status game
-        
-        // Nyalakan Panel Win
+        isGameActive = false;
+
         if (winPanel != null) winPanel.SetActive(true);
-        
-        // Hentikan waktu (optional, kalau mau game freeze saat menang)
-        Time.timeScale = 0f; 
+
+        Time.timeScale = 0f;
     }
 
     public void RestartGame()
@@ -77,9 +82,21 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public static GameManager instance;
-    void Awake()
+    // ==========================
+    //   TO HOME BUTTON
+    // ==========================
+    public void ToHome()
     {
-        instance = this;
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("GameStart");
+    }
+
+    // ==========================
+    //   TO NEXT LEVEL BUTTON
+    // ==========================
+    public void ToNextLevel()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("Level1");
     }
 }

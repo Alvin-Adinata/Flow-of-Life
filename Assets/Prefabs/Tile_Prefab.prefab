@@ -121,6 +121,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ea687454ca491f40b6870a405cefe7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverColor: {r: 0.4415095, g: 0, b: 0.3774902, a: 1}
-  Straight_Tile_Prefab: {fileID: 8558661928522114454, guid: fec13641f768fc041939985f433d00c5, type: 3}
-  Curved_Tile_Prefab: {fileID: 4905421225179375817, guid: e31cfc24ab3b56d42b6eb5f473977feb, type: 3}
+  hoverColor: {r: 0.554717, g: 0.554717, b: 0.554717, a: 1}
+  Pipe: {fileID: 0}

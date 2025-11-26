@@ -53,14 +53,31 @@ public class EarthquakeManager : MonoBehaviour
     void RusakkanSatuPipa()
     {
         Debug.Log("!!! GEMPA TERJADI !!!");
-        
-        // Cari semua pipa (Pakai cara baru FindObjectsByType)
+
         PipeScript[] semuaPipa = FindObjectsByType<PipeScript>(FindObjectsSortMode.None);
 
-        if (semuaPipa.Length > 0)
+        if (semuaPipa.Length == 0)
+        {
+            Debug.Log("Tidak ada pipa untuk dirusak.");
+            return;
+        }
+
+        // Safety untuk mencegah loop tidak berakhir
+        int percobaanMaks = 30;
+
+        for (int i = 0; i < percobaanMaks; i++)
         {
             int acak = Random.Range(0, semuaPipa.Length);
-            semuaPipa[acak].BreakPipe();
+            PipeScript target = semuaPipa[acak];
+
+            // Jika bukan Start/End Pipe → rusakkan dan selesai
+            if (!target.CompareTag("StartPipe") && !target.CompareTag("EndPipe"))
+            {
+                target.BreakPipe();
+                return;
+            }
         }
+
+        Debug.Log("Gempa tidak menemukan pipa yang boleh dirusak (semua Start/End Pipe).");
     }
 }

@@ -7,6 +7,9 @@ public class PipeBehavior : MonoBehaviour
     public enum PipeType { Straight, Curve }
     public PipeType type;
 
+    [Header("Random Settings")]
+    public bool randomizeOnStart = true;
+
     [Header("Lock Settings")]
     public bool isLocked = false; // Jika true, pipa tidak bisa diputar
 
@@ -24,63 +27,62 @@ public class PipeBehavior : MonoBehaviour
 
     void Start()
     {
-        // 1. KHUSUS START & END PIPE: BACA ROTASI DARI INSPECTOR
+        // KHUSUS START & END PIPE — jangan acak, tapi hitung rotasi awal
         if (CompareTag("StartPipe") || CompareTag("EndPipe"))
         {
-            // Ambil sudut rotasi Y saat ini (misal: 90 derajat)
             float currentY = transform.eulerAngles.y;
-
-            // Rumus: Bagi 90 untuk mendapatkan step (0, 1, 2, atau 3)
-            // Mathf.RoundToInt agar membulatkan angka desimal (misal 89.99 jadi 90)
             rotationSteps = Mathf.RoundToInt(currentY / 90f) % 4;
-
             targetRotation = transform.rotation;
-            
-            // Update koneksi agar sesuai dengan rotasi visual yang baru dihitung
+
             UpdateConnections();
             return;
         }
 
-        // 2. UNTUK PIPA LAINNYA (PUZZLE): TETAP RANDOM
-        int randomRotations = Random.Range(0, 4);
-        transform.Rotate(0f, rotationAngle * randomRotations, 0f);
-        targetRotation = transform.rotation;
-        rotationSteps = randomRotations;
+        // PIPE YANG BOLEH DIACAK
+        if (randomizeOnStart)
+        {
+            int randomRotations = Random.Range(0, 4);
+            transform.Rotate(0f, rotationAngle * randomRotations, 0f);
+            targetRotation = transform.rotation;
+            rotationSteps = randomRotations;
 
-        // Hitung koneksi awal
-        UpdateConnections();
+            UpdateConnections();
+        }
+        else
+        {
+            // PIPE BARU (PLAYER BUILD)
+            targetRotation = transform.rotation;
+            UpdateConnections();
+        }
     }
-    
+
     void Update()
     {
         // --- LOGIKA PENGHAPUSAN PIPA DENGAN TOMBOL 'E' ---
-        
-        // Cek apakah tombol 'E' ditekan
         if (Input.GetKeyDown(KeyCode.E))
         {
-            // Lakukan Raycast dari posisi mouse di layar
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            // Gunakan Physics.Raycast untuk melihat apakah kursor mouse mengenai objek
-            // Collider pipa (perlu Collider terpasang!)
             if (Physics.Raycast(ray, out hit, 100f))
             {
-                // Periksa apakah objek yang terkena raycast adalah game object ini
                 if (hit.collider.gameObject == gameObject)
                 {
-                    // Hapus objek pipa
+                    // CEGAH START PIPE DAN END PIPE DIHAPUS
+                    if (CompareTag("StartPipe") || CompareTag("EndPipe"))
+                    {
+                        Debug.Log("StartPipe dan EndPipe TIDAK bisa dihapus!");
+                        return;
+                    }
+
+                    // Hapus pipa lain
                     Destroy(gameObject);
-                    
-                    // Anda dapat menambahkan kode di sini untuk:
-                    // - Memainkan suara atau efek visual penghapusan
-                    // - Memberi tahu Puzzle/Game Manager bahwa sebuah pipa telah hilang
                 }
             }
         }
         // --- AKHIR LOGIKA PENGHAPUSAN ---
     }
-    
+
     private void OnMouseDown()
     {
         if (isLocked)
@@ -93,10 +95,10 @@ public class PipeBehavior : MonoBehaviour
 
         // Menentukan rotasi target 90 derajat selanjutnya
         targetRotation *= Quaternion.Euler(0f, rotationAngle, 0f);
-        
+
         // Perbarui pelacak rotasi logis
         rotationSteps = (rotationSteps + 1) % 4;
-        
+
         StartCoroutine(RotateSmooth());
     }
 
@@ -113,7 +115,7 @@ public class PipeBehavior : MonoBehaviour
             yield return null;
         }
         transform.rotation = targetRotation;
-        
+
         // Setelah rotasi selesai, update koneksi
         UpdateConnections();
         isRotating = false;
@@ -125,7 +127,6 @@ public class PipeBehavior : MonoBehaviour
     /// </summary>
     private void UpdateConnections()
     {
-        // Reset semua koneksi
         connections = new bool[4] { false, false, false, false };
 
         if (type == PipeType.Straight)
@@ -145,30 +146,14 @@ public class PipeBehavior : MonoBehaviour
         {
             switch (rotationSteps)
             {
-                case 0: // Atas & Kanan
-                    connections[0] = true;
-                    connections[1] = true;
-                    break;
-                case 1: // Kanan & Bawah
-                    connections[1] = true;
-                    connections[2] = true;
-                    break;
-                case 2: // Bawah & Kiri
-                    connections[2] = true;
-                    connections[3] = true;
-                    break;
-                case 3: // Kiri & Atas
-                    connections[3] = true;
-                    connections[0] = true;
-                    break;
+                case 0: connections[0] = true; connections[1] = true; break; // Atas + Kanan
+                case 1: connections[1] = true; connections[2] = true; break; // Kanan + Bawah
+                case 2: connections[2] = true; connections[3] = true; break; // Bawah + Kiri
+                case 3: connections[3] = true; connections[0] = true; break; // Kiri + Atas
             }
         }
     }
 
-    /// <summary>
-    /// Fungsi publik yang dibaca oleh PuzzleManager.
-    /// </summary>
-    /// <returns>Array boolean [Up, Right, Down, Left]</returns>
     public bool[] GetConnections()
     {
         return connections;

@@ -50,6 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
+  randomizeOnStart: 0
   isLocked: 0
   rotationAngle: 90
   rotationSpeed: 300

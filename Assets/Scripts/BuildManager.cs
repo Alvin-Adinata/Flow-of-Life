@@ -28,7 +28,17 @@ public class BuildManager : MonoBehaviour
 
         PlayerStat.Money -= PipeToBuild.cost;
 
-        GameObject pipe = (GameObject)Instantiate(PipeToBuild.prefab, tile.GetBuildPosition(), Quaternion.identity);
+        // Tentukan rotasi awal
+        Quaternion initialRotation = Quaternion.identity;
+
+        // Jika yang dibangun adalah Curved_Tile_Prefab → rotasi 90°
+        if (PipeToBuild.prefab == Curved_Tile_Prefab)
+        {
+            initialRotation = Quaternion.Euler(0, 90, 0);
+        }
+
+        // Buat objek
+        GameObject pipe = Instantiate(PipeToBuild.prefab, tile.GetBuildPosition(), initialRotation);
         tile.Pipe = pipe;
 
         Debug.Log("Pipe built! Money left: " + PlayerStat.Money);

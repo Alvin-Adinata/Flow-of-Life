@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5522437340168189389}
-  - component: {fileID: -7509652272142084645}
   - component: {fileID: -1420771350110062729}
+  - component: {fileID: -7509652272142084645}
   - component: {fileID: -4450330631127544040}
   m_Layer: 0
   m_Name: lurus
@@ -35,6 +35,23 @@ Transform:
   - {fileID: 8976470508185081299}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-1420771350110062729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8493619347240736512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab740ce5bcd1ed8419315d5b0f044bc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+  randomizeOnStart: 0
+  isLocked: 0
+  rotationAngle: 90
+  rotationSpeed: 300
 --- !u!114 &-7509652272142084645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52,22 +69,6 @@ MonoBehaviour:
   matNormal: {fileID: 2100000, guid: 0629bd93713375949b60447b425d79c7, type: 2}
   matWater: {fileID: 2100000, guid: cbede3158049c0f42ada0f95563a3c1a, type: 2}
   matBroken: {fileID: 2100000, guid: 968ae8b7eb2bf6e43895bdf59f343881, type: 2}
---- !u!114 &-1420771350110062729
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8493619347240736512}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab740ce5bcd1ed8419315d5b0f044bc2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 0
-  isLocked: 0
-  rotationAngle: 90
-  rotationSpeed: 300
 --- !u!65 &-4450330631127544040
 BoxCollider:
   m_ObjectHideFlags: 0
