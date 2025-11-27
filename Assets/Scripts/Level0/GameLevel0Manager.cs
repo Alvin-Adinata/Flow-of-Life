@@ -70,10 +70,17 @@ public class GameLevel0Manager : MonoBehaviour
         Debug.Log("YOU WIN!");
         isGameActive = false;
 
+        // --- TAMBAHAN BARU: SIMPAN PROGRESS ---
+        // Angka '1' artinya TERBUKA (Unlocked)
+        PlayerPrefs.SetInt("Level1Unlocked", 1); 
+        PlayerPrefs.Save(); // Simpan perubahan agar permanen
+        // --------------------------------------
+
         if (winPanel != null) winPanel.SetActive(true);
 
         Time.timeScale = 0f;
     }
+
 
     public void RestartGame()
     {

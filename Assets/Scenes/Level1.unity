@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.7411765, g: 0.7921569, b: 0.8509804, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.035
+  m_FogDensity: 0.025
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.50980395, g: 0.7647059, b: 1, a: 1}
@@ -915,8 +915,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f5dc6ad22356d945abce8608c6081cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waktuMin: 10
-  waktuMax: 20
+  waktuMin: 5
+  waktuMax: 10
   kameraUtama: {fileID: 330585546}
   durasiGetar: 1
   kekuatanGetar: 0.2
