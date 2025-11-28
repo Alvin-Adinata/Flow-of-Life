@@ -3,17 +3,20 @@ using UnityEngine.SceneManagement;
 
 public class GameLevel0Manager : MonoBehaviour
 {
+    [Header("Panels")]
     [SerializeField] GameObject gameOverPanel;
     [SerializeField] GameObject tutorialPanel;
-
-    // Panel Menang
     [SerializeField] GameObject winPanel;
 
+    [Header("Audio Clips")]
+    [SerializeField] private AudioClip bgMusic;
+    [SerializeField] private AudioClip winMusic;
+    [SerializeField] private AudioClip loseMusic;
+
+    private AudioSource audioSource;
+
     public static bool isRestarted = false;
-
-    // Status agar game tidak mengecek win berkali-kali
     public bool isGameActive = true;
-
     public static GameLevel0Manager instance;
 
     void Awake()
@@ -23,12 +26,12 @@ public class GameLevel0Manager : MonoBehaviour
 
     void Start()
     {
+        SetupAudio();
+
         if (!isRestarted)
         {
             gameOverPanel.SetActive(false);
             tutorialPanel.SetActive(false);
-
-            // Matikan panel win di awal
             if (winPanel != null) winPanel.SetActive(false);
 
             Time.timeScale = 0f;
@@ -38,7 +41,6 @@ public class GameLevel0Manager : MonoBehaviour
         {
             tutorialPanel.SetActive(false);
             gameOverPanel.SetActive(false);
-
             if (winPanel != null) winPanel.SetActive(false);
 
             Time.timeScale = 1f;
@@ -46,6 +48,56 @@ public class GameLevel0Manager : MonoBehaviour
         }
     }
 
+    // ==========================
+    //   SETUP AUDIO
+    // ==========================
+    private void SetupAudio()
+    {
+        // Buat AudioSource jika belum ada
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
+        // Setup awal background music
+        audioSource.loop = true;
+        audioSource.playOnAwake = false;
+
+        PlayBackgroundMusic();
+    }
+
+    private void PlayBackgroundMusic()
+    {
+        if (bgMusic == null) return;
+
+        audioSource.Stop();
+        audioSource.clip = bgMusic;
+        audioSource.loop = true;
+        audioSource.Play();
+    }
+
+    private void PlayWinMusic()
+    {
+        if (winMusic == null) return;
+
+        audioSource.Stop();
+        audioSource.clip = winMusic;
+        audioSource.loop = true;
+        audioSource.Play();
+    }
+
+    private void PlayLoseMusic()
+    {
+        if (loseMusic == null) return;
+
+        audioSource.Stop();
+        audioSource.clip = loseMusic;
+        audioSource.loop = true;
+        audioSource.Play();
+    }
+
+    // ==========================
+    //   TUTORIAL
+    // ==========================
     public void ShowTutorial()
     {
         tutorialPanel.SetActive(true);
@@ -54,15 +106,29 @@ public class GameLevel0Manager : MonoBehaviour
     public void StartGameFromTutorial()
     {
         tutorialPanel.SetActive(false);
-        Time.timeScale = 1f; // mulai permainan
+        Time.timeScale = 1f; 
     }
 
+    // ==========================
+    //        GAME OVER
+    // ==========================
     public void GameOver()
     {
+        if (!isGameActive) return;
+
+        isGameActive = false;
+
         gameOverPanel.SetActive(true);
+
+        // ▶ Putar Lose Music
+        PlayLoseMusic();
+
+        Time.timeScale = 0f;
     }
 
-    // Level Completed / Menang
+    // ==========================
+    //         WIN
+    // ==========================
     public void LevelCompleted()
     {
         if (!isGameActive) return;
@@ -70,40 +136,52 @@ public class GameLevel0Manager : MonoBehaviour
         Debug.Log("YOU WIN!");
         isGameActive = false;
 
-        // --- TAMBAHAN BARU: SIMPAN PROGRESS ---
-        // Angka '1' artinya TERBUKA (Unlocked)
-        PlayerPrefs.SetInt("Level1Unlocked", 1); 
-        PlayerPrefs.Save(); // Simpan perubahan agar permanen
-        // --------------------------------------
+        PlayerPrefs.SetInt("Level1Unlocked", 1);
+        PlayerPrefs.Save();
 
         if (winPanel != null) winPanel.SetActive(true);
+
+        // ▶ Putar Win Music
+        PlayWinMusic();
 
         Time.timeScale = 0f;
     }
 
-
+    // ==========================
+    //       RESTART
+    // ==========================
     public void RestartGame()
     {
         Time.timeScale = 1f;
         isRestarted = true;
+
+        // Stop music sebelum load
+        audioSource.Stop();
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     // ==========================
-    //   TO HOME BUTTON
+    //         TO HOME
     // ==========================
     public void ToHome()
     {
         Time.timeScale = 1f;
+
+        audioSource.Stop(); // stop music
+
         SceneManager.LoadScene("GameStart");
     }
 
     // ==========================
-    //   TO NEXT LEVEL BUTTON
+    //      NEXT LEVEL
     // ==========================
     public void ToNextLevel()
     {
         Time.timeScale = 1f;
+
+        audioSource.Stop(); // stop music
+
         SceneManager.LoadScene("Level1");
     }
 }

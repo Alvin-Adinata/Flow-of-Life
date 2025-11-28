@@ -1,9 +1,8 @@
 using UnityEngine;
-using System.Collections; // Diperlukan untuk IEnumerator
+using System.Collections;
 
 public class PipeBehavior : MonoBehaviour
 {
-    // Tipe pipa, di-set di Inspector
     public enum PipeType { Straight, Curve }
     public PipeType type;
 
@@ -11,23 +10,22 @@ public class PipeBehavior : MonoBehaviour
     public bool randomizeOnStart = true;
 
     [Header("Lock Settings")]
-    public bool isLocked = false; // Jika true, pipa tidak bisa diputar
+    public bool isLocked = false;
 
-    // Arah koneksi [Atas, Kanan, Bawah, Kiri]
+    // FLAG BARU → hanya pipa yang rusak (dari gempa) yang bisa dihancurkan
+    public bool isBreakable = false;
+
     private bool[] connections = new bool[4];
 
-    // Variabel rotasi
     [SerializeField] private float rotationAngle = 90f;
     [SerializeField] private float rotationSpeed = 300f;
     private Quaternion targetRotation;
     private bool isRotating = false;
-
-    // Pelacak rotasi logis (0 = 0°, 1 = 90°, 2 = 180°, 3 = 270°)
     private int rotationSteps = 0;
 
     void Start()
     {
-        // KHUSUS START & END PIPE — jangan acak, tapi hitung rotasi awal
+        // START & END PIPE → tidak acak
         if (CompareTag("StartPipe") || CompareTag("EndPipe"))
         {
             float currentY = transform.eulerAngles.y;
@@ -38,7 +36,6 @@ public class PipeBehavior : MonoBehaviour
             return;
         }
 
-        // PIPE YANG BOLEH DIACAK
         if (randomizeOnStart)
         {
             int randomRotations = Random.Range(0, 4);
@@ -50,7 +47,6 @@ public class PipeBehavior : MonoBehaviour
         }
         else
         {
-            // PIPE BARU (PLAYER BUILD)
             targetRotation = transform.rotation;
             UpdateConnections();
         }
@@ -68,14 +64,21 @@ public class PipeBehavior : MonoBehaviour
             {
                 if (hit.collider.gameObject == gameObject)
                 {
-                    // CEGAH START PIPE DAN END PIPE DIHAPUS
+                    // CEGAH Start & End Pipe
                     if (CompareTag("StartPipe") || CompareTag("EndPipe"))
                     {
-                        Debug.Log("StartPipe dan EndPipe TIDAK bisa dihapus!");
+                        Debug.Log("StartPipe & EndPipe tidak bisa dihancurkan!");
                         return;
                     }
 
-                    // Hapus pipa lain
+                    // CEGAH pipa yang belum rusak
+                    if (!isBreakable)
+                    {
+                        Debug.Log("Pipa ini belum rusak, jadi tidak bisa dihancurkan!");
+                        return;
+                    }
+
+                    // HANCURKAN
                     Destroy(gameObject);
                 }
             }
@@ -93,10 +96,7 @@ public class PipeBehavior : MonoBehaviour
 
         if (isRotating) return;
 
-        // Menentukan rotasi target 90 derajat selanjutnya
         targetRotation *= Quaternion.Euler(0f, rotationAngle, 0f);
-
-        // Perbarui pelacak rotasi logis
         rotationSteps = (rotationSteps + 1) % 4;
 
         StartCoroutine(RotateSmooth());
@@ -105,6 +105,7 @@ public class PipeBehavior : MonoBehaviour
     private IEnumerator RotateSmooth()
     {
         isRotating = true;
+
         while (Quaternion.Angle(transform.rotation, targetRotation) > 0.1f)
         {
             transform.rotation = Quaternion.RotateTowards(
@@ -114,42 +115,37 @@ public class PipeBehavior : MonoBehaviour
             );
             yield return null;
         }
-        transform.rotation = targetRotation;
 
-        // Setelah rotasi selesai, update koneksi
+        transform.rotation = targetRotation;
         UpdateConnections();
         isRotating = false;
     }
 
-    /// <summary>
-    /// Memperbarui status koneksi berdasarkan tipe dan rotasi.
-    /// [0] = Atas (+Z), [1] = Kanan (+X), [2] = Bawah (-Z), [3] = Kiri (-X)
-    /// </summary>
     private void UpdateConnections()
     {
-        connections = new bool[4] { false, false, false, false };
+        connections = new bool[4];
 
         if (type == PipeType.Straight)
         {
-            if (rotationSteps == 0 || rotationSteps == 2) // Vertikal
+            if (rotationSteps == 0 || rotationSteps == 2)
             {
-                connections[0] = true; // Atas
-                connections[2] = true; // Bawah
+                connections[0] = true;
+                connections[2] = true;
             }
-            else // Horizontal
+            else
             {
-                connections[1] = true; // Kanan
-                connections[3] = true; // Kiri
+                connections[1] = true;
+                connections[3] = true;
             }
         }
         else if (type == PipeType.Curve)
         {
             switch (rotationSteps)
             {
-                case 0: connections[0] = true; connections[1] = true; break; // Atas + Kanan
-                case 1: connections[1] = true; connections[2] = true; break; // Kanan + Bawah
-                case 2: connections[2] = true; connections[3] = true; break; // Bawah + Kiri
-                case 3: connections[3] = true; connections[0] = true; break; // Kiri + Atas
+                case 0: connections[0] = true; connections[1] = true; break;
+                case 1: connections[1] = true; connections[2] = true; break;
+                case 2: connections[2] = true; connections[3] = true; break;
+                case 3: connections[3] = true; connections[0] = true; break;
             }
         }
     }

@@ -8,7 +8,7 @@ public class EarthquakeManager : MonoBehaviour
     public float waktuMax = 30f;
 
     [Header("Efek Kamera")]
-    public Transform kameraUtama; // Slot untuk Main Camera
+    public Transform kameraUtama;
     public float durasiGetar = 1.0f;
     public float kekuatanGetar = 0.2f;
 
@@ -21,10 +21,10 @@ public class EarthquakeManager : MonoBehaviour
     {
         while (true)
         {
-            // 1. Tunggu waktu acak
+            // Tunggu waktu acak
             yield return new WaitForSeconds(Random.Range(waktuMin, waktuMax));
 
-            // 2. Mulai Gempa (Getar & Rusak Pipa)
+            // Mulai getaran + merusakkan pipa
             StartCoroutine(GetarkanKamera());
             RusakkanSatuPipa();
         }
@@ -37,7 +37,6 @@ public class EarthquakeManager : MonoBehaviour
 
         while (waktu < durasiGetar)
         {
-            // Acak posisi kamera
             float x = Random.Range(-1f, 1f) * kekuatanGetar;
             float y = Random.Range(-1f, 1f) * kekuatanGetar;
 
@@ -46,7 +45,7 @@ public class EarthquakeManager : MonoBehaviour
             waktu += Time.deltaTime;
             yield return null;
         }
-        // Kembalikan posisi
+
         kameraUtama.localPosition = posisiAsli;
     }
 
@@ -62,7 +61,6 @@ public class EarthquakeManager : MonoBehaviour
             return;
         }
 
-        // Safety untuk mencegah loop tidak berakhir
         int percobaanMaks = 30;
 
         for (int i = 0; i < percobaanMaks; i++)
@@ -70,14 +68,24 @@ public class EarthquakeManager : MonoBehaviour
             int acak = Random.Range(0, semuaPipa.Length);
             PipeScript target = semuaPipa[acak];
 
-            // Jika bukan Start/End Pipe → rusakkan dan selesai
+            // Hanya pipa selain Start/End
             if (!target.CompareTag("StartPipe") && !target.CompareTag("EndPipe"))
             {
+                // Pipa rusak
                 target.BreakPipe();
+
+                // Tandai bisa dihancurkan oleh tombol E
+                PipeBehavior pb = target.GetComponent<PipeBehavior>();
+                if (pb != null)
+                {
+                    pb.isBreakable = true;
+                    Debug.Log("Pipa ini menjadi RUSAK dan bisa dihancurkan oleh tombol E!");
+                }
+
                 return;
             }
         }
 
-        Debug.Log("Gempa tidak menemukan pipa yang boleh dirusak (semua Start/End Pipe).");
+        Debug.Log("Gempa tidak menemukan pipa yang boleh dirusak.");
     }
 }
