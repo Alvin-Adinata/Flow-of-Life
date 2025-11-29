@@ -12,6 +12,7 @@ public class GameStartManager : MonoBehaviour
     [SerializeField] private Button StartGameButton;
     [SerializeField] private Button ToLevel0Button;
     [SerializeField] private Button ToLevel1Button;
+    [SerializeField] private Button ToLevel2Button;   // ⭐ Tambahan Level 2
 
     [Header("Background Music")]
     [SerializeField] private AudioClip bgMusic;
@@ -29,6 +30,7 @@ public class GameStartManager : MonoBehaviour
         StartGameButton.onClick.AddListener(OpenLevelPanel);
         ToLevel0Button.onClick.AddListener(() => LoadLevel("Level0"));
         ToLevel1Button.onClick.AddListener(() => LoadLevel("Level1"));
+        ToLevel2Button.onClick.AddListener(() => LoadLevel("Level2"));  // ⭐ Tambahan Listener
     }
 
     private void SetupMusic()
@@ -48,7 +50,10 @@ public class GameStartManager : MonoBehaviour
     private void CheckLevelStatus()
     {
         int isLevel1Unlocked = PlayerPrefs.GetInt("Level1Unlocked", 0);
+        int isLevel2Unlocked = PlayerPrefs.GetInt("Level2Unlocked", 0); // ⭐ Tambahan Level 2
+
         ToLevel1Button.interactable = isLevel1Unlocked == 1;
+        ToLevel2Button.interactable = isLevel2Unlocked == 1;            // ⭐ Pengaturan interactable
     }
 
     private void OpenLevelPanel()
@@ -58,8 +63,8 @@ public class GameStartManager : MonoBehaviour
 
         if (audioSource != null)
         {
-            audioSource.Stop();  
-            audioSource.Play();  
+            audioSource.Stop();
+            audioSource.Play();
         }
     }
 

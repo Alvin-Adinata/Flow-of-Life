@@ -6,43 +6,41 @@ public class TimerLevel0 : MonoBehaviour
     [SerializeField] TextMeshProUGUI timerText;
 
     [Header("Timer Settings")]
-    [SerializeField] float startTime;   // waktu awal timer
+    [SerializeField] float startTime;
 
-    float remainingTime; // waktu berjalan (runtime)
+    float remainingTime;
 
     void Start()
     {
-        // reset timer setiap kali scene dimulai / restart
         remainingTime = startTime;
     }
 
     void Update()
     {
-        // Kurangi waktu
+        // ⭐ Jika belum boleh jalan → stop
+        if (!GameLevel0Manager.allowTimer)
+            return;
+
         remainingTime -= Time.deltaTime;
 
-        // Jika waktu <= 10 detik, ubah warna menjadi merah
         if (remainingTime <= 10f)
         {
             timerText.color = Color.red;
         }
 
-        // Jika habis → Game Over
         if (remainingTime <= 0f)
         {
             timerText.text = "0:00.00";
+            remainingTime = 0;
 
-            // panggil GameOver dari GameLevel0Manager
             Object.FindFirstObjectByType<GameLevel0Manager>()?.GameOver();
             return;
         }
 
-        // Update display
         int minutes = Mathf.FloorToInt(remainingTime / 60f);
         int seconds = Mathf.FloorToInt(remainingTime % 60f);
-        int milliseconds = Mathf.FloorToInt((remainingTime * 1000f) % 1000f / 10f);  // dua digit ms
+        int milliseconds = Mathf.FloorToInt((remainingTime * 1000f) % 1000f / 10f);
 
-        // Format: M:SS.ms (dua digit ms)
         timerText.text = string.Format("{0:0}:{1:00}.{2:00}", minutes, seconds, milliseconds);
     }
 }

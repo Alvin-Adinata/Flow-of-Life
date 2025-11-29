@@ -118,7 +118,6 @@ public class GameManager : MonoBehaviour
         isGameActive = false;
         gameOverPanel.SetActive(true);
 
-        // Play lose music
         PlayLoseMusic();
 
         Time.timeScale = 0f;
@@ -136,7 +135,6 @@ public class GameManager : MonoBehaviour
 
         if (winPanel != null) winPanel.SetActive(true);
 
-        // Play win music
         PlayWinMusic();
 
         Time.timeScale = 0f;
@@ -167,5 +165,18 @@ public class GameManager : MonoBehaviour
             audioSource.Stop();
 
         SceneManager.LoadScene("GameStart");
+    }
+
+    // =====================================
+    //           TO NEXT LEVEL
+    // =====================================
+    public void ToNextLevel()
+    {
+        Time.timeScale = 1f;
+
+        if (audioSource != null)
+            audioSource.Stop();
+
+        SceneManager.LoadScene("Level2");   // ⭐ Load Level 2
     }
 }
