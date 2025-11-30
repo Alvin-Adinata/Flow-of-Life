@@ -10,9 +10,16 @@ public class GameLevel0Manager : MonoBehaviour
     [SerializeField] GameObject tutorialPanel;
     [SerializeField] GameObject winPanel;
 
+    [Header("Menu Panel")]
+    [SerializeField] GameObject menuPanel;
+
     [Header("Cutscene")]
     [SerializeField] private GameObject cutsceneRawImage;
     [SerializeField] private VideoPlayer videoPlayer;
+
+    [Header("Skip Cutscene")]
+    [SerializeField] private GameObject skipCutscenePanel;   
+    [SerializeField] private Button skipCutsceneButton;      
 
     [Header("Audio Clips")]
     [SerializeField] private AudioClip bgMusic;
@@ -25,7 +32,6 @@ public class GameLevel0Manager : MonoBehaviour
     public bool isGameActive = true;
     public static GameLevel0Manager instance;
 
-    // ⭐ CONTROL TIMER
     public static bool allowTimer = false;
 
     void Awake()
@@ -37,10 +43,29 @@ public class GameLevel0Manager : MonoBehaviour
     {
         SetupAudio();
 
-        // Timer dimatikan dulu
         allowTimer = false;
 
+        if (menuPanel != null)
+            menuPanel.SetActive(false);
+
+        if (skipCutscenePanel != null)
+            skipCutscenePanel.SetActive(false);
+
         PlayCutscene();
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!isGameActive) return;
+            if (cutsceneRawImage.activeSelf) return;
+
+            if (!menuPanel.activeSelf)
+                OpenMenu();
+            else
+                ContinueGame();
+        }
     }
 
     // ============================================================
@@ -57,13 +82,30 @@ public class GameLevel0Manager : MonoBehaviour
 
         cutsceneRawImage.SetActive(true);
 
+        // ★ Tampilkan tombol Skip selama cutscene
+        if (skipCutscenePanel != null)
+            skipCutscenePanel.SetActive(true);
+
+        if (skipCutsceneButton != null)
+            skipCutsceneButton.onClick.AddListener(SkipCutscene);
+
         videoPlayer.loopPointReached += OnVideoFinished;
         videoPlayer.Play();
     }
 
     private void OnVideoFinished(VideoPlayer vp)
     {
+        SkipCutscene(); // otomatis skip saat video selesai
+    }
+
+    public void SkipCutscene()
+    {
+        videoPlayer.Stop();
+
         cutsceneRawImage.SetActive(false);
+        if (skipCutscenePanel != null)
+            skipCutscenePanel.SetActive(false);
+
         StartGameAfterCutscene();
     }
 
@@ -74,10 +116,9 @@ public class GameLevel0Manager : MonoBehaviour
             tutorialPanel.SetActive(true);
 
             PlayBackgroundMusic();
-
             Time.timeScale = 0f;
 
-            allowTimer = false;  // Timer masih dimatikan
+            allowTimer = false;
         }
         else
         {
@@ -86,13 +127,33 @@ public class GameLevel0Manager : MonoBehaviour
             PlayBackgroundMusic();
             Time.timeScale = 1f;
 
-            allowTimer = true; // Restart langsung main
+            allowTimer = true;
             isRestarted = false;
         }
     }
 
     // ============================================================
-    //                        AUDIO SETUP
+    //                       MENU SYSTEM
+    // ============================================================
+    public void OpenMenu()
+    {
+        if (!isGameActive) return;
+        menuPanel.SetActive(true);
+
+        Time.timeScale = 0f;
+        allowTimer = false;
+    }
+
+    public void ContinueGame()
+    {
+        menuPanel.SetActive(false);
+
+        Time.timeScale = 1f;
+        allowTimer = true;
+    }
+
+    // ============================================================
+    //                       AUDIO SYSTEM
     // ============================================================
     private void SetupAudio()
     {
@@ -137,20 +198,14 @@ public class GameLevel0Manager : MonoBehaviour
     }
 
     // ============================================================
-    //                        TUTORIAL
+    //                         TUTORIAL
     // ============================================================
-    public void ShowTutorial()
-    {
-        tutorialPanel.SetActive(true);
-    }
-
     public void StartGameFromTutorial()
     {
         tutorialPanel.SetActive(false);
 
         Time.timeScale = 1f;
-
-        allowTimer = true;   // ⭐ TIMER MULAI DI SINI
+        allowTimer = true;
     }
 
     // ============================================================
@@ -163,6 +218,7 @@ public class GameLevel0Manager : MonoBehaviour
         isGameActive = false;
         allowTimer = false;
 
+        menuPanel.SetActive(false);
         gameOverPanel.SetActive(true);
 
         PlayLoseMusic();
@@ -176,7 +232,6 @@ public class GameLevel0Manager : MonoBehaviour
     {
         if (!isGameActive) return;
 
-        Debug.Log("YOU WIN!");
         isGameActive = false;
         allowTimer = false;
 
@@ -196,8 +251,8 @@ public class GameLevel0Manager : MonoBehaviour
     {
         Time.timeScale = 1f;
         isRestarted = true;
-        audioSource.Stop();
 
+        audioSource.Stop();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

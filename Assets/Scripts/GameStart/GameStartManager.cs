@@ -12,7 +12,7 @@ public class GameStartManager : MonoBehaviour
     [SerializeField] private Button StartGameButton;
     [SerializeField] private Button ToLevel0Button;
     [SerializeField] private Button ToLevel1Button;
-    [SerializeField] private Button ToLevel2Button;   // ⭐ Tambahan Level 2
+    [SerializeField] private Button ToLevel2Button;
 
     [Header("Background Music")]
     [SerializeField] private AudioClip bgMusic;
@@ -30,7 +30,7 @@ public class GameStartManager : MonoBehaviour
         StartGameButton.onClick.AddListener(OpenLevelPanel);
         ToLevel0Button.onClick.AddListener(() => LoadLevel("Level0"));
         ToLevel1Button.onClick.AddListener(() => LoadLevel("Level1"));
-        ToLevel2Button.onClick.AddListener(() => LoadLevel("Level2"));  // ⭐ Tambahan Listener
+        ToLevel2Button.onClick.AddListener(() => LoadLevel("Level2"));
     }
 
     private void SetupMusic()
@@ -50,10 +50,10 @@ public class GameStartManager : MonoBehaviour
     private void CheckLevelStatus()
     {
         int isLevel1Unlocked = PlayerPrefs.GetInt("Level1Unlocked", 0);
-        int isLevel2Unlocked = PlayerPrefs.GetInt("Level2Unlocked", 0); // ⭐ Tambahan Level 2
+        int isLevel2Unlocked = PlayerPrefs.GetInt("Level2Unlocked", 0);
 
         ToLevel1Button.interactable = isLevel1Unlocked == 1;
-        ToLevel2Button.interactable = isLevel2Unlocked == 1;            // ⭐ Pengaturan interactable
+        ToLevel2Button.interactable = isLevel2Unlocked == 1;
     }
 
     private void OpenLevelPanel()
@@ -76,9 +76,28 @@ public class GameStartManager : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
-    public void ResetProgress()
+    // ======================================================
+    //          RESET / DELETE PLAYERPREFS LEVEL DATA
+    // ======================================================
+    public void DeleteLevelData()
     {
-        PlayerPrefs.DeleteAll();
-        Debug.Log("Progress Direset!");
+        // Reset ulang agar level 1 & 2 terkunci
+        PlayerPrefs.SetInt("Level1Unlocked", 0);
+        PlayerPrefs.SetInt("Level2Unlocked", 0);
+
+        PlayerPrefs.Save();
+
+        Debug.Log("Semua progress dihapus! Level kembali terkunci.");
+
+        // Update UI button lock
+        CheckLevelStatus();
+    }
+
+    // Quit Game NORMAL tanpa menghapus progress apa pun
+    public void QuitGame()
+    {
+        Debug.Log("Keluar dari game...");
+
+        Application.Quit();
     }
 }

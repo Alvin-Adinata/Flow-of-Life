@@ -8,6 +8,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject tutorialPanel;
     [SerializeField] GameObject winPanel;
 
+    [Header("Menu Panel")]
+    [SerializeField] GameObject menuPanel; 
+
     [Header("Audio Clips")]
     [SerializeField] private AudioClip bgMusic;
     [SerializeField] private AudioClip winMusic;
@@ -34,6 +37,7 @@ public class GameManager : MonoBehaviour
             gameOverPanel.SetActive(false);
             tutorialPanel.SetActive(false);
             if (winPanel != null) winPanel.SetActive(false);
+            if (menuPanel != null) menuPanel.SetActive(false);
 
             Time.timeScale = 0f;
             ShowTutorial();
@@ -43,14 +47,30 @@ public class GameManager : MonoBehaviour
             tutorialPanel.SetActive(false);
             gameOverPanel.SetActive(false);
             if (winPanel != null) winPanel.SetActive(false);
+            if (menuPanel != null) menuPanel.SetActive(false);
 
             Time.timeScale = 1f;
             isRestarted = false;
         }
     }
 
+    void Update()
+    {
+        // ================================
+        //   ESC UNTUK BUKA/TUTUP MENU
+        // ================================
+        if (Input.GetKeyDown(KeyCode.Escape) && isGameActive)
+        {
+            // Jika panel belum aktif → buka
+            if (!menuPanel.activeSelf)
+                OpenMenu();
+            else
+                ContinueFromMenu();
+        }
+    }
+
     // =====================================
-    //       SETUP AUDIO
+    //       AUDIO HANDLING
     // =====================================
     private void SetupAudio()
     {
@@ -60,14 +80,12 @@ public class GameManager : MonoBehaviour
 
         audioSource.loop = true;
         audioSource.playOnAwake = false;
-
         PlayBackgroundMusic();
     }
 
     private void PlayBackgroundMusic()
     {
         if (bgMusic == null) return;
-
         audioSource.Stop();
         audioSource.clip = bgMusic;
         audioSource.loop = true;
@@ -77,7 +95,6 @@ public class GameManager : MonoBehaviour
     private void PlayWinMusic()
     {
         if (winMusic == null) return;
-
         audioSource.Stop();
         audioSource.clip = winMusic;
         audioSource.loop = true;
@@ -87,7 +104,6 @@ public class GameManager : MonoBehaviour
     private void PlayLoseMusic()
     {
         if (loseMusic == null) return;
-
         audioSource.Stop();
         audioSource.clip = loseMusic;
         audioSource.loop = true;
@@ -95,7 +111,7 @@ public class GameManager : MonoBehaviour
     }
 
     // =====================================
-    //             TUTORIAL
+    //              TUTORIAL
     // =====================================
     public void ShowTutorial()
     {
@@ -105,6 +121,27 @@ public class GameManager : MonoBehaviour
     public void StartGameFromTutorial()
     {
         tutorialPanel.SetActive(false);
+        Time.timeScale = 1f;
+    }
+
+    // =====================================
+    //              MENU SYSTEM
+    // =====================================
+    public void OpenMenu()
+    {
+        if (!isGameActive) return;
+
+        menuPanel.SetActive(true);
+
+        // pause game → timer otomatis berhenti
+        Time.timeScale = 0f;
+    }
+
+    public void ContinueFromMenu()
+    {
+        menuPanel.SetActive(false);
+
+        // lanjut game
         Time.timeScale = 1f;
     }
 
@@ -132,6 +169,9 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("YOU WIN!");
         isGameActive = false;
+
+        PlayerPrefs.SetInt("Level2Unlocked", 1);
+        PlayerPrefs.Save();
 
         if (winPanel != null) winPanel.SetActive(true);
 
@@ -177,6 +217,6 @@ public class GameManager : MonoBehaviour
         if (audioSource != null)
             audioSource.Stop();
 
-        SceneManager.LoadScene("Level2");   // ⭐ Load Level 2
+        SceneManager.LoadScene("Level2");
     }
 }
